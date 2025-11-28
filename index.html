@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ESP32 Control Panel</title>
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 50px; }
+    button { padding: 12px 20px; margin: 10px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <h1>ESP32 Remote Control</h1>
+
+  <button onclick="turnOn()">Turn ON</button>
+  <button onclick="turnOff()">Turn OFF</button>
+
+  <h3>Status: <span id="status">Loading...</span></h3>
+
+  <script type="module">
+    // Firebase Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAr7ZFNxMXomk9IcBKhPVLCRvvWNzcWZp4",
+      authDomain: "esp32-control-1f6db.firebaseapp.com",
+      databaseURL: "https://esp32-control-1f6db-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "esp32-control-1f6db",
+      storageBucket: "esp32-control-1f6db.firebasestorage.app",
+      messagingSenderId: "540330816160",
+      appId: "1:540330816160:web:01bba387739c1222864fc5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // CONTROL FUNCTIONS
+    window.turnOn = function() {
+      set(ref(db, "device/status"), { led: "ON" });
+    };
+
+    window.turnOff = function() {
+      set(ref(db, "device/status"), { led: "OFF" });
+    };
+
+    // LIVE STATUS LISTENER
+    const statusRef = ref(db, "device/status/led");
+    onValue(statusRef, (snapshot) => {
+      const state = snapshot.val();
+      document.getElementById("status").innerText = state;
+    });
+
+  </script>
+
+</body>
+</html>
